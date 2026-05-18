@@ -371,8 +371,8 @@ function UsersView({ isAllowed, canManage }: { isAllowed: boolean, canManage: bo
 
         main.sort((a, b) => {
             const getSortValue = (user: UserData): string | number | null => {
-                if (user.role === 'pegawai') return user.skNumber;
-                if (user.role === 'guru' || user.role === 'kepala_sekolah') return user.sequenceNumber;
+                if (user.role === 'pegawai') return user.skNumber ?? null;
+                if (user.role === 'guru' || user.role === 'kepala_sekolah') return user.sequenceNumber ?? null;
                 return null;
             };
 
