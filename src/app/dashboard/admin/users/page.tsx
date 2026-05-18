@@ -187,7 +187,7 @@ function useUsersWithCache(firestore: any, isAllowed: boolean) {
                 const fetchedUsers = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })) as UserData[];
 
                 setUsers(fetchedUsers);
-                setInCache(cacheKey, fetchedUsers, 3600); // Cache for 1 hour
+                setInCache(cacheKey, fetchedUsers);
             } catch (error) {
                 console.error("Error fetching users with cache:", error);
                 if (!users) setUsers([]); // Prevent permanent loading state on error
