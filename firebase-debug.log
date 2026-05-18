@@ -1,0 +1,24 @@
+[debug] [2026-05-18T06:39:16.766Z] ----------------------------------------------------------------------
+[debug] [2026-05-18T06:39:16.767Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /nix/store/gm9mcvzb17vv8cla08khrg29vxn3sq4r-firebase-tools-15.1.0/lib/node_modules/firebase-tools/lib/bin/firebase.js init
+[debug] [2026-05-18T06:39:16.768Z] CLI Version:   15.1.0
+[debug] [2026-05-18T06:39:16.768Z] Platform:      linux
+[debug] [2026-05-18T06:39:16.768Z] Node Version:  v20.19.1
+[debug] [2026-05-18T06:39:16.768Z] Time:          Mon May 18 2026 06:39:16 GMT+0000 (Coordinated Universal Time)
+[debug] [2026-05-18T06:39:16.768Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-05-18T06:39:17.442Z] Checked if tokens are valid: true, expires at: 1779089932705
+[debug] [2026-05-18T06:39:17.443Z] Checked if tokens are valid: true, expires at: 1779089932705
+[debug] [2026-05-18T06:39:17.446Z] >>> [apiv2][query] GET https://monospace-pa.googleapis.com/v1/workspaces/e-spenli-main-2-58323368 [none]
+[debug] [2026-05-18T06:39:18.456Z] <<< [apiv2][status] GET https://monospace-pa.googleapis.com/v1/workspaces/e-spenli-main-2-58323368 200
+[debug] [2026-05-18T06:39:18.457Z] <<< [apiv2][body] GET https://monospace-pa.googleapis.com/v1/workspaces/e-spenli-main-2-58323368 {"workspaceId":"e-spenli-main-2-58323368","name":"e-spenli-main (2)","workspaceRedirectUrl":"firebase-e-spenli-main-2-1779085297780.cluster-yylgzpipxrar4v4a72liastuqy.cloudworkstations.dev","status":"WORKSPACE_STATUS_RUNNING","lastAccessDatetime":"2026-05-18T06:23:33.106542Z","failureReason":"CREATE_OR_UPDATE failed too many times","workspaceTemplate":"WORKSPACE_TEMPLATE_FLUTTER","owner":"SELF","serviceAccountEmail":"msp-2876935656236094130@monospace-1.iam.gserviceaccount.com","enableNix":true,"ownerEmail":"reginaldusgabur@gmail.com","templateArgs":"{\"signedUrl\":\"https://monospace-local-import-bucket-us.storage.googleapis.com/e-spenli-main-2-58323368-e-spenli-main%2520%282%29.zip?X-Goog-Algorithm=GOOG4-RSA-SHA256&X-Goog-Credential=monospace-local-import-manager%40monospace-local-import-bucket.iam.gserviceaccount.com%2F20260518%2Fauto%2Fstorage%2Fgoog4_request&X-Goog-Date=20260518T062133Z&X-Goog-Expires=3600&X-Goog-SignedHeaders=host&x-goog-signature=2d61c27b5dccbacd1456ea34f7d8d980afef9354b863a833c489be6fb820a3e59735814d85c3b9562f6f235cf0725af50facbfb612a7a204869e321b0abd30bb340481c41759aa9e53897bc3156d180f81a5140e27b79392c12f06ae6efb1e6ca70bb230e80e761fcd274d9a0ae173919d7f777990042c719472bcdadfd649e96bc5a3b9bcae5d397cfa146e07a7d84a86742beb697ebe7b28c9ac8425d2b0b07be9443e18dcb83086aeae2c08a4bb3d675d4fc4bd5cc1c85bce602b1e76aa56c61bbc58ca694dca160f1a0b8f10ebbb740a9ee647a09dde44766e03cefe98aaaf095c0e328a280941810e3066b7b08903b756ef6775940b2b6947466deca759\"}","templateRepoUrl":"file:///usr/local/monospace/templates/private/_local_import","workstationAccessToken":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Nsb3VkLmdvb2dsZS5jb20vd29ya3N0YXRpb25zIiwiYXVkIjoiZmlyZWJhc2UtZS1zcGVubGktbWFpbi0yLTE3NzkwODUyOTc3ODAuY2x1c3Rlci15eWxnenBpcHhyYXI0djRhNzJsaWFzdHVxeS5jbG91ZHdvcmtzdGF0aW9ucy5kZXYiLCJpYXQiOjE3NzkwODYzNTgsImV4cCI6MTc3OTE3Mjc1OH0.k7jzlDI_NLKPMtAs3ig0bPgjvpdT2lxRrn_Pkm-eqqf8NmlNbrJTO9B5tEHFV-ctK_9VaylJCpx7xEjXGwqkh67dbumIrSDN2zK0pV8k_DWSb-LXs-khhs3JJfAILwW3NW5qxEch-tUvgMKOEtwq4KzsGgWB4wSLB2rDXdRUIfwo4mE9-TReHXBj1Ha6gmZX29taSxBBGZoNfeY9VRAt3LxTxSrSBT4GyZ-8RIRkb6NV7971yvgqjqDpMZ0Kd1d-JZkV8w9evhHJVO_0jP3xRzwTc7FCR60qy87mo0jRwtLNP9OClx56nDP6a5lmU-fvFuDm-3DAIFeeffrIKSTURg"}
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/user/e-spenli-main-2
+
