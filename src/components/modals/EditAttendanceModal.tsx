@@ -3,7 +3,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useFirestore } from '@/firebase';
 import { doc, getDoc, writeBatch, Timestamp } from 'firebase/firestore';
+<<<<<<< HEAD
 import { fetchUserMonthlyReportData, MonthlyReportData } from '@/lib/attendance';
+=======
+import { fetchUserMonthlyReportData } from '@/lib/attendance';
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 import { 
     Dialog, 
     DialogContent, 
@@ -42,13 +46,21 @@ interface EditAttendanceModalProps {
     currentUser: { uid: string; [key: string]: any } | null;
 }
 
+<<<<<<< HEAD
 // --- CONSTANTS ---
+=======
+// --- FIX: ADDED CONSTANT FOR OFFICIAL DUTY ---
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 const FIX_AS_PRESENT = 'FIX_AS_PRESENT';
 const FIX_AS_LEAVE = 'FIX_AS_LEAVE';
 const FIX_AS_OFFICIAL_DUTY = 'FIX_AS_OFFICIAL_DUTY';
 const FIX_CHECK_OUT = 'FIX_CHECK_OUT';
 const FIX_CHECK_IN_ON_TIME = 'FIX_CHECK_IN_ON_TIME';
 const FIX_CHECK_IN_LATE = 'FIX_CHECK_IN_LATE';
+<<<<<<< HEAD
+=======
+// --- END OF FIX ---
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
 // --- HELPER FUNCTIONS ---
 const parseTime = (timeStr: string, baseDate: Date): Date => {
@@ -82,6 +94,7 @@ export default function EditAttendanceModal({ user, month, isOpen, onClose, curr
                 const schoolConfigSnap = await getDoc(schoolConfigRef);
                 const config = schoolConfigSnap.data() || {};
                 setSchoolConfig(config);
+<<<<<<< HEAD
                 const reportData: MonthlyReportData[] = await fetchUserMonthlyReportData(firestore, user.uid, month, config, {});
                 
                 // FIX: Map and parse data to match ProblematicDay type
@@ -97,6 +110,14 @@ export default function EditAttendanceModal({ user, month, isOpen, onClose, curr
                         checkOutTime: d.checkOutTime ? parseISO(d.checkOutTime) : null,
                     }));
 
+=======
+                const reportData = await fetchUserMonthlyReportData(firestore, user.uid, month, config, {});
+                const problems: ProblematicDay[] = reportData.filter(d => 
+                    d.status === 'Alpa' || 
+                    d.description === 'Tidak Absen Pulang' ||
+                    d.description === 'Tidak Absen Masuk'
+                );
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
                 setProblematicDays(problems);
                 setSelectedActions({});
                 setLeaveReasons({});
@@ -130,6 +151,10 @@ export default function EditAttendanceModal({ user, month, isOpen, onClose, curr
             return;
         }
         
+<<<<<<< HEAD
+=======
+        // --- FIX: VALIDATION FOR BOTH LEAVE AND OFFICIAL DUTY ---
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
         for (const [dayId, action] of actionsToPerform) {
             if ((action === FIX_AS_LEAVE || action === FIX_AS_OFFICIAL_DUTY) && (!leaveReasons[dayId] || !leaveReasons[dayId].trim())) {
                 const day = problematicDays.find(d => d.id === dayId);
@@ -139,6 +164,10 @@ export default function EditAttendanceModal({ user, month, isOpen, onClose, curr
                 return;
             }
         }
+<<<<<<< HEAD
+=======
+        // --- END OF FIX ---
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
         const { checkInStartTime = '07:00', checkInEndTime = '08:00', checkOutStartTime = '14:00', checkOutEndTime = '16:00' } = schoolConfig;
 
@@ -178,6 +207,10 @@ export default function EditAttendanceModal({ user, month, isOpen, onClose, curr
                         });
                         break;
                     
+<<<<<<< HEAD
+=======
+                    // --- FIX: HANDLER FOR SAVING OFFICIAL DUTY ---
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
                     case FIX_AS_OFFICIAL_DUTY:
                          batch.set(recordRef, {
                             userId: user!.uid, date: day.id, 
@@ -187,6 +220,10 @@ export default function EditAttendanceModal({ user, month, isOpen, onClose, curr
                             manualEntry: true, updatedBy: currentUser.uid, updatedAt: Timestamp.now()
                         });
                         break;
+<<<<<<< HEAD
+=======
+                    // --- END OF FIX ---
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
                     case FIX_CHECK_OUT:
                         const randomFixCheckOut = getRandomTimeInRange(recordDate, checkOutStartTime, checkOutEndTime);
@@ -238,6 +275,10 @@ export default function EditAttendanceModal({ user, month, isOpen, onClose, curr
         
         if (day.status === 'Alpa') {
             return (
+<<<<<<< HEAD
+=======
+                // --- FIX: ADDED UI OPTION FOR "DINAS" ---
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
                 <RadioGroup {...commonRadioProps}>
                     <div className="flex items-center space-x-2">
                         <RadioGroupItem value={FIX_AS_PRESENT} id={`${day.id}-present`} />
@@ -262,6 +303,10 @@ export default function EditAttendanceModal({ user, month, isOpen, onClose, curr
                         )}
                     </div>
                 </RadioGroup>
+<<<<<<< HEAD
+=======
+                // --- END OF FIX ---
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
             );
         }
         if (day.description === 'Tidak Absen Pulang') {

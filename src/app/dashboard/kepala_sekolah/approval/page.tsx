@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -24,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, Check, X, Inbox } from 'lucide-react';
 import { useFirestore, useMemoFirebase, useUser, useDoc, useCollection } from '@/firebase';
-import { collection, doc, query, where, Timestamp, getDocs, updateDoc, type DocumentData } from 'firebase/firestore';
+import { collection, doc, query, where, Timestamp, getDocs, updateDoc, type DocumentData, collectionGroup } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
@@ -65,8 +61,7 @@ const ApprovalTableSkeleton = ({ cols, rows = 3 }: { cols: number, rows?: number
     </div>
 );
 
-
-export default function PersetujuanIzinPage() {
+export default function ApprovalPage() {
   const { user, isUserLoading: isAuthLoading } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
@@ -74,98 +69,73 @@ export default function PersetujuanIzinPage() {
   
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  const userDocRef = useMemoFirebase(() => {
-<<<<<<< HEAD
-    if (!user) return null;
-=======
-    if (!user || !firestore) return null; // FIX: Added firestore check
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
+  const userDocRef = useMemoFirebase(() => user ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
   const { data: userData, isLoading: isUserDataLoading } = useDoc(user, userDocRef);
 
   const isRoleCheckLoading = isAuthLoading || isUserDataLoading;
-  const isPrivileged = !isRoleCheckLoading && (userData?.role === 'kepala_sekolah' || userData?.role === 'admin');
+  const isKepalaSekolah = !isRoleCheckLoading && userData?.role === 'kepala_sekolah';
 
-<<<<<<< HEAD
-  const allUsersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'users'), where('role', '!=', 'siswa')) : null, [firestore]);
-=======
-  const allUsersQuery = useMemoFirebase(() => {
-    if (!firestore) return null; // FIX: Added firestore check
-    return query(collection(firestore, 'users'), where('role', '!=', 'siswa'));
-  }, [firestore]);
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
-  const { data: usersData, isLoading: isUsersLoading } = useCollection(user, allUsersQuery);
+  const usersForApprovalQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'users'), where('role', 'in', ['guru', 'pegawai'])) : null, [firestore]);
+  const { data: usersForApprovalData, isLoading: isUsersLoading } = useCollection(user, usersForApprovalQuery);
   const userMap = useMemo(() => {
-    if (!usersData) return new Map();
-    return new Map(usersData.map(u => [u.id, u.name]));
-  }, [usersData]);
+    if (!usersForApprovalData) return new Map();
+    return new Map(usersForApprovalData.map(u => [u.id, u.name]));
+  }, [usersForApprovalData]);
 
   const [allRequests, setAllRequests] = useState<LeaveRequest[]>([]);
   const [isLeaveRequestsLoading, setIsLeaveRequestsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isPrivileged || !firestore || !usersData) {
-        if (!isUsersLoading) {
-            setIsLeaveRequestsLoading(false);
-        }
+    if (!isKepalaSekolah || !firestore || isUsersLoading) {
+        if (!isUsersLoading) setIsLeaveRequestsLoading(false);
         return;
     }
 
     const fetchLeaveRequests = async () => {
         setIsLeaveRequestsLoading(true);
-        setAllRequests([]); // Clear previous results
         try {
-            const usersToQuery = usersData.filter(u => u.role !== 'admin' && u.role !== 'siswa');
-
-            const requestPromises = usersToQuery.map(u => {
-                const q = query(collection(firestore, 'users', u.id, 'leaveRequests'));
-                return getDocs(q).then(snapshot => 
-                    snapshot.docs.map(d => ({ ...d.data(), id: d.id, userId: u.id }) as LeaveRequest)
-                );
-            });
-            
-            const results = await Promise.all(requestPromises);
-            const allFetchedRequests = results.flat();
-
+            const userIdsForApproval = Array.from(userMap.keys());
+            if (userIdsForApproval.length === 0) {
+                setAllRequests([]);
+                return;
+            }
 
             const sixDaysAgo = new Date();
             sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
             sixDaysAgo.setHours(0, 0, 0, 0);
 
-            const recentRequests = allFetchedRequests.filter(req => {
-                const startDate = req.startDate?.toDate();
-                return startDate && startDate >= sixDaysAgo;
-            });
+            const q = query(
+                collectionGroup(firestore, 'leaveRequests'),
+                where('startDate', '>=', Timestamp.fromDate(sixDaysAgo)),
+                where('__name__', 'in', userIdsForApproval.map(id => `users/${id}/leaveRequests`))
+            );
             
-            setAllRequests(recentRequests);
-
+            const leaveRequestsSnapshot = await getDocs(q);
+            
+            const fetchedRequests = leaveRequestsSnapshot.docs.map(doc => {
+                const userId = doc.ref.parent.parent?.id;
+                return { ...doc.data(), id: doc.id, userId: userId };
+            }).filter(Boolean) as LeaveRequest[];
+            
+            setAllRequests(fetchedRequests);
         } catch (error) {
-            console.error("Failed to fetch leave requests:", error);
-            if ((error as any).code !== 'permission-denied') {
-                toast({
-                    variant: 'destructive',
-                    title: 'Gagal Memuat Permintaan Izin',
-                    description: 'Terjadi kesalahan saat mengambil data dari database.',
-                });
-            } else {
-                 toast({
-                    variant: 'destructive',
-                    title: 'Gagal: Izin Ditolak',
-                    description: 'Gagal memuat data karena masalah izin. Ini bisa terjadi jika terlalu banyak data dimuat sekaligus.',
-                });
-            }
+            console.error("Gagal memuat permintaan izin:", error);
+            toast({
+                variant: "destructive",
+                title: "Gagal Memuat Data",
+                description: "Terjadi kesalahan saat memuat permintaan izin.",
+            });
         } finally {
             setIsLeaveRequestsLoading(false);
         }
     };
-
+    
     fetchLeaveRequests();
-  }, [isPrivileged, firestore, usersData, isUsersLoading, toast]);
 
+  }, [isKepalaSekolah, firestore, isUsersLoading, userMap, toast]);
 
   const { pendingRequests, recentHistory } = useMemo(() => {
-    if (!allRequests) return { pendingRequests: [], recentHistory: [] };
+    if (!allRequests || !userMap) return { pendingRequests: [], recentHistory: [] };
     const enrichedRequests = allRequests.map(req => ({
       ...req,
       userName: userMap.get(req.userId) || 'Nama tidak ditemukan'
@@ -181,11 +151,11 @@ export default function PersetujuanIzinPage() {
     if (!isRoleCheckLoading) {
       if (!user) {
         router.replace('/');
-      } else if (!isPrivileged) {
+      } else if (!isKepalaSekolah) {
         router.replace('/dashboard');
       }
     }
-  }, [isRoleCheckLoading, user, isPrivileged, router]);
+  }, [isRoleCheckLoading, user, isKepalaSekolah, router]);
 
   const handleUpdateRequestStatus = async (request: LeaveRequest, newStatus: 'approved' | 'rejected') => {
     if (!firestore || updatingId) return;
@@ -219,7 +189,7 @@ export default function PersetujuanIzinPage() {
     }
   };
   
-  if (isRoleCheckLoading || !isPrivileged) {
+  if (isRoleCheckLoading || !isKepalaSekolah || !userData) {
     return (
         <div className="flex h-screen w-full items-center justify-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />

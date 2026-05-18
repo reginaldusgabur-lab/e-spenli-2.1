@@ -25,7 +25,11 @@ import { doc } from 'firebase/firestore';
 import { format, isSameMonth, addMonths, subMonths, parseISO } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { fetchUserMonthlyReportData } from '@/lib/attendance';
+<<<<<<< HEAD
 import { getFromCache, setInCache, invalidateCache } from '@/lib/cache'; // FIX: Use invalidateCache
+=======
+import { getFromCache, setInCache, removeFromCache } from '@/lib/cache'; // Import cache utility
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
 // --- Types and Constants ---
 const statusVariant: { [key: string]: 'default' | 'secondary' | 'destructive' | 'outline' } = {
@@ -73,6 +77,10 @@ export default function LaporanPage() {
 
     setIsReportLoading(true);
 
+<<<<<<< HEAD
+=======
+    // 1. Check cache first
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     if (!forceRefresh) {
         const cachedData = getFromCache(cacheKey);
         if (cachedData) {
@@ -82,12 +90,20 @@ export default function LaporanPage() {
         }
     }
 
+<<<<<<< HEAD
+=======
+    // 2. If no cache or forceRefresh, fetch from Firestore
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     try {
         const rawReport = await fetchUserMonthlyReportData(firestore, user.uid, currentMonth, schoolConfig);
         
         const formattedReport: ReportItem[] = rawReport.map((record: any) => ({
             id: record.id,
+<<<<<<< HEAD
             date: record.date,
+=======
+            date: record.date, // Keep ISO string
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
             dateString: format(parseISO(record.date), 'eee, dd/MM/yy', { locale: id }),
             checkIn: record.checkInTime ? format(parseISO(record.checkInTime), 'HH:mm') : '-',
             checkOut: record.checkOutTime ? format(parseISO(record.checkOutTime), 'HH:mm') : '-',
@@ -96,7 +112,11 @@ export default function LaporanPage() {
         }));
 
         setMonthlyReportData(formattedReport);
+<<<<<<< HEAD
         setInCache(cacheKey, formattedReport);
+=======
+        setInCache(cacheKey, formattedReport); // 3. Save to cache
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     } catch (error) {
         console.error("Failed to fetch monthly report:", error);
         toast({ title: "Gagal Memuat Laporan", description: "Terjadi kesalahan saat mengambil data.", variant: "destructive" });
@@ -110,7 +130,10 @@ export default function LaporanPage() {
   }, [fetchReport]);
 
   const handleRefresh = () => {
+<<<<<<< HEAD
       if (cacheKey) invalidateCache(cacheKey); // FIX: Use invalidateCache
+=======
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
       toast({ title: 'Sinkronisasi Data', description: 'Memaksa pembaruan data dari server.' });
       fetchReport(true);
   };
@@ -129,6 +152,10 @@ export default function LaporanPage() {
 
   const isLoading = isAuthLoading || isConfigLoading || isReportLoading;
 
+<<<<<<< HEAD
+=======
+  // Skeleton loader
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
   if (isLoading && monthlyReportData.length === 0) {
     return (
         <Card>

@@ -198,9 +198,15 @@ export default function KonfigurasiAbsenPage() {
   const [attendanceWeights, setAttendanceWeights] = useState(defaultAttendanceWeights);
   
   // --- Firestore Data ---
+<<<<<<< HEAD
   const schoolConfigRef = useMemoFirebase(() => doc(firestore, 'schoolConfig', 'default'), [firestore]);
   const { data: schoolConfigData, isLoading: isConfigLoading } = useDoc(user, schoolConfigRef);
   const userDocRef = useMemoFirebase(() => user ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
+=======
+  const schoolConfigRef = useMemoFirebase(() => firestore ? doc(firestore, 'schoolConfig', 'default') : null, [firestore]);
+  const { data: schoolConfigData, isLoading: isConfigLoading } = useDoc(user, schoolConfigRef);
+  const userDocRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
   const { data: userData, isLoading: isUserDataLoading } = useDoc(user, userDocRef);
 
   // --- Derived State & Authorization ---

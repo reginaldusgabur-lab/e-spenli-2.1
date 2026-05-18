@@ -45,6 +45,7 @@ export default function AbsenPage() {
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const readerId = "qr-reader";
 
+<<<<<<< HEAD
   // --- Firestore Data Hooks ---
   const userDocRef = useMemoFirebase(() => user ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
   const { data: userData, isLoading: isUserDataLoading } = useDoc(user, userDocRef);
@@ -52,6 +53,26 @@ export default function AbsenPage() {
   const { data: schoolConfig, isLoading: isConfigLoading } = useDoc(user, schoolConfigRef);
   const monthlyConfigId = useMemo(() => format(new Date(), 'yyyy-MM'), []);
   const monthlyConfigRef = useMemoFirebase(() => firestore ? doc(firestore, 'monthlyConfigs', monthlyConfigId) : null, [firestore, monthlyConfigId]);
+=======
+  // --- Firestore Data Hooks (CLEANED AND FIXED) ---
+  const userDocRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+  const { data: userData, isLoading: isUserDataLoading } = useDoc(user, userDocRef);
+
+  const schoolConfigRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'schoolConfig', 'default');
+  }, [firestore]);
+  const { data: schoolConfig, isLoading: isConfigLoading } = useDoc(user, schoolConfigRef);
+
+  const monthlyConfigId = useMemo(() => format(new Date(), 'yyyy-MM'), []);
+  const monthlyConfigRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'monthlyConfigs', monthlyConfigId);
+  }, [firestore, monthlyConfigId]);
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
   const { data: monthlyConfig, isLoading: isMonthlyConfigLoading } = useDoc(user, monthlyConfigRef);
   
   const todaysAttendanceQuery = useMemoFirebase(() => {
@@ -95,6 +116,7 @@ export default function AbsenPage() {
     }
     setStatus('processing');
     
+<<<<<<< HEAD
     // --- MODIFIED BLOCK: Updated time validation logic ---
     let isCheckInTime = false, isCheckOutTime = false;
     if (schoolConfig.useTimeValidation) {
@@ -103,14 +125,25 @@ export default function AbsenPage() {
         const currentTime = now.getHours() * 60 + now.getMinutes();
 
         // 1. Check-in time validation (remains unchanged)
+=======
+    let isCheckInTime = false, isCheckOutTime = false;
+    if (schoolConfig.useTimeValidation) {
+        const now = new Date();
+        const dayOfWeek = now.getDay();
+        const currentTime = now.getHours() * 60 + now.getMinutes();
+
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
         const [inStartH, inStartM] = schoolConfig.checkInStartTime.split(':').map(Number);
         const checkInStartTime = inStartH * 60 + inStartM;
         const [inEndH, inEndM] = schoolConfig.checkInEndTime.split(':').map(Number);
         const checkInEndTime = inEndH * 60 + inEndM;
         isCheckInTime = currentTime >= checkInStartTime && currentTime <= checkInEndTime;
 
+<<<<<<< HEAD
         // 2. Check-out time validation (THE FIX)
         // Use daily schedule if available
+=======
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
         const dailyCheckoutConfig = schoolConfig.checkOutTimes?.[dayOfWeek];
         if (dailyCheckoutConfig && dailyCheckoutConfig.start && dailyCheckoutConfig.end) {
             const [outStartH, outStartM] = dailyCheckoutConfig.start.split(':').map(Number);
@@ -119,7 +152,10 @@ export default function AbsenPage() {
             const checkOutEndTime = outEndH * 60 + outEndM;
             isCheckOutTime = currentTime >= checkOutStartTime && currentTime <= checkOutEndTime;
         } else {
+<<<<<<< HEAD
             // Fallback to old global settings for robustness if daily is not configured
+=======
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
             if (schoolConfig.checkOutStartTime && schoolConfig.checkOutEndTime) {
                 const [outStartH, outStartM] = schoolConfig.checkOutStartTime.split(':').map(Number);
                 const checkOutStartTime = outStartH * 60 + outStartM;
@@ -129,17 +165,25 @@ export default function AbsenPage() {
             }
         }
         
+<<<<<<< HEAD
         // If it's not time for check-in or check-out, show error.
         if (!isCheckInTime && !isCheckOutTime) return setStatus('error_time');
     } else {
         // If time validation is disabled, decide based on existing record.
+=======
+        if (!isCheckInTime && !isCheckOutTime) return setStatus('error_time');
+    } else {
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
         if (todaysRecord && !todaysRecord.checkOutTime) {
             isCheckOutTime = true;
         } else {
             isCheckInTime = true;
         }
     }
+<<<<<<< HEAD
     // --- END MODIFIED BLOCK ---
+=======
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
     try {
         let latitude: number | null = null, longitude: number | null = null;
@@ -339,9 +383,12 @@ const StatusFeedbackOverlay = ({ status, locationError, onClose, userData }: { s
 
     const showQuote = useMemo(() => (status === 'success_in' || status === 'success_out') && userData?.role !== 'admin', [status, userData]);
     const attendanceType = useMemo(() => {
+<<<<<<< HEAD
         // BUG FIX: The quote logic was inverted. This corrects it.
         // When attendance is successful (success_in), we need an 'in' quote.
         // When checkout is successful (success_out), we need an 'out' quote.
+=======
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
         if (status === 'success_in') return 'in';
         if (status === 'success_out') return 'out';
         return null;

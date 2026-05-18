@@ -13,17 +13,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
+<<<<<<< HEAD
     // Jangan lakukan apa-apa sampai Firebase selesai memuat data user awal
+=======
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     if (isUserLoading) {
       return;
     }
 
     if (!user) {
+<<<<<<< HEAD
       // Jika tidak ada user, langsung redirect ke halaman login
+=======
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
       router.replace('/');
       return;
     }
 
+<<<<<<< HEAD
     // User ada, sekarang periksa perannya di database
     const userDocRef = doc(firestore, 'users', user.uid);
     getDoc(userDocRef).then(docSnap => {
@@ -36,6 +43,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
     }).catch(() => {
       // Jika ada error saat mengambil data, redirect juga untuk keamanan.
+=======
+    if (!firestore) {
+        // Jika firestore belum siap, jangan lakukan apa-apa
+        // Kita bisa asumsikan akan ada re-render saat sudah siap
+        return;
+    }
+
+    const userDocRef = doc(firestore, 'users', user.uid);
+    getDoc(userDocRef).then(docSnap => {
+      if (docSnap.exists() && docSnap.data().role === 'admin') {
+        setIsVerifying(false);
+      } else {
+        router.replace('/dashboard');
+      }
+    }).catch(() => {
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
       router.replace('/dashboard');
     });
 

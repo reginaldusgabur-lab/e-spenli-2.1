@@ -1,9 +1,15 @@
 'use client';
 
+<<<<<<< HEAD
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { useFirestore, useUser, useDoc, useMemoFirebase } from '@/firebase';
 import { doc, DocumentData } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
+=======
+import { createContext, useContext, ReactNode, useMemo } from 'react';
+import { useFirestore, useUser, useDoc, useMemoFirebase } from '@/firebase';
+import { doc, DocumentData } from 'firebase/firestore';
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
 interface CacheContextType {
   schoolConfig: DocumentData | null;
@@ -25,6 +31,10 @@ export function CacheProvider({ children }: { children: ReactNode }) {
   const userProfileRef = useMemoFirebase(() => user ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
   const { data: userProfile, isLoading: isProfileLoading } = useDoc(user, userProfileRef);
 
+<<<<<<< HEAD
+=======
+  // Directly derive the loading state. This is more efficient and avoids re-renders.
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
   const isCacheLoading = isAuthLoading || isConfigLoading || isProfileLoading;
 
   const value = useMemo(() => ({

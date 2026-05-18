@@ -1,5 +1,9 @@
 'use client';
+<<<<<<< HEAD
 
+=======
+// Hot reload trigger
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -35,7 +39,11 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+<<<<<<< HEAD
 import { auth, useUser } from '@/firebase';
+=======
+import { getFirebaseAuth, useUser } from '@/firebase';
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
@@ -83,11 +91,15 @@ export default function LoginPage() {
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setIsLoginLoading(true);
+<<<<<<< HEAD
     if (!auth) {
       toast({ variant: "destructive", title: "Layanan Belum Siap", description: "Layanan otentikasi belum siap." });
       setIsLoginLoading(false);
       return;
     }
+=======
+    const auth = getFirebaseAuth();
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
     } catch (error: any) {
@@ -99,11 +111,15 @@ export default function LoginPage() {
 
   const handlePasswordReset = async (values: z.infer<typeof resetPasswordSchema>) => {
     setIsResetLoading(true);
+<<<<<<< HEAD
     if (!auth) {
       toast({ variant: "destructive", title: "Layanan Belum Siap", description: "Layanan otentikasi belum siap." });
       setIsResetLoading(false);
       return;
     }
+=======
+    const auth = getFirebaseAuth();
+>>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     try {
       await sendPasswordResetEmail(auth, values.email);
       toast({ title: "Link Reset Terkirim", description: `Periksa email ${values.email} untuk instruksi.` });
