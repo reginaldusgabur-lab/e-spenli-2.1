@@ -101,7 +101,7 @@ function useAttendanceSummary(currentMonth: Date) {
                     terlambatCount = userAttendance.filter((att: any) => {
                         if (!att.checkInTime) return false;
                         const checkInTime = att.checkInTime.toDate();
-                        const checkInDeadline = setMinutes(setHours(new Date(checkInTime), endH, endM), 0);
+                        const checkInDeadline = setMinutes(setHours(new Date(checkInTime), endH), endM);
                         return isBefore(checkInDeadline, checkInTime);
                     }).length;
                 }
