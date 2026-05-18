@@ -143,7 +143,8 @@ export default function AdminUserAttendanceDetailPage() {
         return null;
     });
 
-    return report.filter(Boolean).sort((a, b) => (b.date.getTime()) - (a.date.getTime()));
+    const filteredReport = report.filter((item): item is Exclude<typeof report[number], null> => item !== null);
+    return filteredReport.sort((a, b) => b.date.getTime() - a.date.getTime());
 
   }, [attendanceHistory, leaveHistory, schoolConfig, monthlyConfig, currentMonth, isLoading]);
 
