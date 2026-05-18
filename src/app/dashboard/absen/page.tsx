@@ -45,19 +45,17 @@ export default function AbsenPage() {
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const readerId = "qr-reader";
 
-  // --- Firestore Data Hooks (DEFINITIVE FIX) ---
+  // --- Firestore Data Hooks (CLEANED AND FIXED) ---
   const userDocRef = useMemoFirebase(() => {
     if (!user || !firestore) return null;
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
-
   const { data: userData, isLoading: isUserDataLoading } = useDoc(user, userDocRef);
 
   const schoolConfigRef = useMemoFirebase(() => {
     if (!firestore) return null;
     return doc(firestore, 'schoolConfig', 'default');
   }, [firestore]);
-
   const { data: schoolConfig, isLoading: isConfigLoading } = useDoc(user, schoolConfigRef);
 
   const monthlyConfigId = useMemo(() => format(new Date(), 'yyyy-MM'), []);
@@ -65,7 +63,6 @@ export default function AbsenPage() {
     if (!firestore) return null;
     return doc(firestore, 'monthlyConfigs', monthlyConfigId);
   }, [firestore, monthlyConfigId]);
-
   const { data: monthlyConfig, isLoading: isMonthlyConfigLoading } = useDoc(user, monthlyConfigRef);
   
   const todaysAttendanceQuery = useMemoFirebase(() => {
@@ -73,7 +70,6 @@ export default function AbsenPage() {
     const todayStr = format(new Date(), 'yyyy-MM-dd');
     return query(collection(firestore, 'users', user.uid, 'attendanceRecords'), where('date', '==', todayStr));
   }, [user, firestore]);
-
   const { data: todaysAttendance, isLoading: isAttendanceLoading } = useCollection(user, todaysAttendanceQuery);
   const todaysRecord = useMemo(() => todaysAttendance?.[0], [todaysAttendance]);
 
@@ -110,22 +106,18 @@ export default function AbsenPage() {
     }
     setStatus('processing');
     
-    // --- MODIFIED BLOCK: Updated time validation logic ---
     let isCheckInTime = false, isCheckOutTime = false;
     if (schoolConfig.useTimeValidation) {
         const now = new Date();
-        const dayOfWeek = now.getDay(); // Sunday - 0, Monday - 1, etc.
+        const dayOfWeek = now.getDay();
         const currentTime = now.getHours() * 60 + now.getMinutes();
 
-        // 1. Check-in time validation (remains unchanged)
         const [inStartH, inStartM] = schoolConfig.checkInStartTime.split(':').map(Number);
         const checkInStartTime = inStartH * 60 + inStartM;
         const [inEndH, inEndM] = schoolConfig.checkInEndTime.split(':').map(Number);
         const checkInEndTime = inEndH * 60 + inEndM;
         isCheckInTime = currentTime >= checkInStartTime && currentTime <= checkInEndTime;
 
-        // 2. Check-out time validation (THE FIX)
-        // Use daily schedule if available
         const dailyCheckoutConfig = schoolConfig.checkOutTimes?.[dayOfWeek];
         if (dailyCheckoutConfig && dailyCheckoutConfig.start && dailyCheckoutConfig.end) {
             const [outStartH, outStartM] = dailyCheckoutConfig.start.split(':').map(Number);
@@ -134,7 +126,6 @@ export default function AbsenPage() {
             const checkOutEndTime = outEndH * 60 + outEndM;
             isCheckOutTime = currentTime >= checkOutStartTime && currentTime <= checkOutEndTime;
         } else {
-            // Fallback to old global settings for robustness if daily is not configured
             if (schoolConfig.checkOutStartTime && schoolConfig.checkOutEndTime) {
                 const [outStartH, outStartM] = schoolConfig.checkOutStartTime.split(':').map(Number);
                 const checkOutStartTime = outStartH * 60 + outStartM;
@@ -144,17 +135,14 @@ export default function AbsenPage() {
             }
         }
         
-        // If it's not time for check-in or check-out, show error.
         if (!isCheckInTime && !isCheckOutTime) return setStatus('error_time');
     } else {
-        // If time validation is disabled, decide based on existing record.
         if (todaysRecord && !todaysRecord.checkOutTime) {
             isCheckOutTime = true;
         } else {
             isCheckInTime = true;
         }
     }
-    // --- END MODIFIED BLOCK ---
 
     try {
         let latitude: number | null = null, longitude: number | null = null;
@@ -354,9 +342,6 @@ const StatusFeedbackOverlay = ({ status, locationError, onClose, userData }: { s
 
     const showQuote = useMemo(() => (status === 'success_in' || status === 'success_out') && userData?.role !== 'admin', [status, userData]);
     const attendanceType = useMemo(() => {
-        // BUG FIX: The quote logic was inverted. This corrects it.
-        // When attendance is successful (success_in), we need an 'in' quote.
-        // When checkout is successful (success_out), we need an 'out' quote.
         if (status === 'success_in') return 'in';
         if (status === 'success_out') return 'out';
         return null;
