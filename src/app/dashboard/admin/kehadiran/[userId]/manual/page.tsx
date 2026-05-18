@@ -94,7 +94,7 @@ export default function ManualAttendancePage() {
     }, [authUser, isAuthLoading, firestore, userId, recordId, router]);
 
     const handleReset = async () => {
-        if (!existingRecord) return;
+        if (!existingRecord || !firestore) return;
 
         setIsSubmitting(true);
         try {
@@ -104,7 +104,6 @@ export default function ManualAttendancePage() {
                 title: "Sukses",
                 description: "Data kehadiran telah di-reset menjadi Alpa.",
             });
-            // Refresh state to show that the record is gone
             setExistingRecord(null);
             setCheckIn('');
             setCheckOut('');
@@ -124,6 +123,10 @@ export default function ManualAttendancePage() {
         e.preventDefault();
         if (!checkIn) {
             setError('Jam masuk wajib diisi.');
+            return;
+        }
+        if (!firestore || !authUser) {
+            setError('Koneksi database atau otentikasi gagal. Silakan coba lagi.');
             return;
         }
 
@@ -162,13 +165,12 @@ export default function ManualAttendancePage() {
             };
 
             if (docSnap.exists()) {
-                await updateDoc(recordRef, { ...dataToSave, lastModifiedBy: authUser?.uid, lastModifiedAt: serverTimestamp() });
+                await updateDoc(recordRef, { ...dataToSave, lastModifiedBy: authUser.uid, lastModifiedAt: serverTimestamp() });
             } else {
-                await setDoc(recordRef, { ...dataToSave, createdBy: authUser?.uid, createdAt: serverTimestamp() });
+                await setDoc(recordRef, { ...dataToSave, createdBy: authUser.uid, createdAt: serverTimestamp() });
             }
             
             toast({ title: "Sukses", description: "Data kehadiran telah berhasil disimpan." });
-            // Re-fetch data to update UI, especially to show the reset button
             fetchData();
 
         } catch (err) {
