@@ -1,10 +1,6 @@
 'use client';
 
-<<<<<<< HEAD
 import { doc, getDoc, collection, getDocs, query, where, collectionGroup, DocumentData, Timestamp, getCountFromServer, QuerySnapshot } from 'firebase/firestore';
-=======
-import { doc, getDoc, collection, getDocs, query, where, collectionGroup, DocumentData, Timestamp, getCountFromServer } from 'firebase/firestore';
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 import { eachDayOfInterval, isWithinInterval, startOfMonth, endOfMonth, startOfDay, subDays, format, isBefore, endOfDay, parseISO, isValid, isAfter, isToday } from 'date-fns';
 import type { Firestore } from 'firebase/firestore';
 import { id } from 'date-fns/locale';
@@ -26,7 +22,6 @@ interface AttendanceData {
     checkOutTime?: Timestamp;
 }
 
-<<<<<<< HEAD
 export interface MonthlyReportData {
   id: string;
   date: string;
@@ -36,13 +31,7 @@ export interface MonthlyReportData {
   checkOutTime: string | null;
 }
 
-
-=======
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 // *** DEFINITIVE FIX FOR "MACET" & "DATA HILANG" ***
-// The root cause was an incorrect query strategy that either hung the database or returned no data.
-// This new implementation fetches all data in a few broad, efficient queries and processes it in-memory,
-// correctly referencing user IDs from document paths. This is both performant and correct.
 
 export async function calculateMultipleUserStats(firestore: Firestore, users: User[], currentMonth: Date) {
     const monthStart = startOfMonth(currentMonth);
@@ -82,11 +71,7 @@ export async function calculateMultipleUserStats(firestore: Firestore, users: Us
     );
     const leaveQuery = query(collectionGroup(firestore, 'leaveRequests'), where('status', '==', 'approved'));
 
-<<<<<<< HEAD
     const [attendanceSnap, leaveSnap]: [QuerySnapshot<DocumentData>, QuerySnapshot<DocumentData>] = await Promise.all([ getDocs(attendanceQuery), getDocs(leaveQuery) ]);
-=======
-    const [attendanceSnap, leaveSnap] = await Promise.all([ getDocs(attendanceQuery), getDocs(leaveQuery) ]);
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
     const attendanceMap = new Map<string, Set<string>>();
     attendanceSnap.forEach(doc => {
@@ -151,11 +136,7 @@ export async function getDailyStaffAttendanceStats(firestore: Firestore) {
     const leaveQuery = query(collectionGroup(firestore, 'leaveRequests'));
     const lateSubmissionQuery = query(collectionGroup(firestore, 'lateSubmissions'), where('status', '==', 'pending'));
 
-<<<<<<< HEAD
     const [usersSnap, attendanceSnap, leaveSnap, lateSubmissionSnap]: [QuerySnapshot<DocumentData>, QuerySnapshot<DocumentData>, QuerySnapshot<DocumentData>, QuerySnapshot<DocumentData>] = await Promise.all([
-=======
-    const [usersSnap, attendanceSnap, leaveSnap, lateSubmissionSnap] = await Promise.all([
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
         getDocs(usersQuery),
         getDocs(attendanceQuery),
         getDocs(leaveQuery),
@@ -223,10 +204,7 @@ export async function getDailyStaffAttendanceStats(firestore: Firestore) {
 
 export async function calculateAttendanceStats(firestore: Firestore, userId: string, currentMonth: Date) {
     const monthStart = startOfMonth(currentMonth);
-<<<<<<< HEAD
-=======
     const monthEnd = endOfMonth(currentMonth);
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
     const [schoolConfigSnap, monthlyConfigSnap] = await Promise.all([
         getDoc(doc(firestore, 'schoolConfig', 'default')),
@@ -239,11 +217,7 @@ export async function calculateAttendanceStats(firestore: Firestore, userId: str
     const offDays: number[] = schoolConfig?.offDays ?? [0];
     const holidays: string[] = Array.isArray(monthlyConfig?.holidays) ? monthlyConfig.holidays : [];
     
-<<<<<<< HEAD
-    const effectiveWorkingDays = eachDayOfInterval({ start: startOfMonth(currentMonth), end: endOfMonth(currentMonth) }).filter(day =>
-=======
     const effectiveWorkingDays = eachDayOfInterval({ start: monthStart, end: monthEnd }).filter(day =>
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
         !offDays.includes(day.getDay()) && !holidays.includes(format(day, 'yyyy-MM-dd'))
     );
     
@@ -273,7 +247,6 @@ export async function calculateAttendanceStats(firestore: Firestore, userId: str
     };
 }
 
-<<<<<<< HEAD
 export async function fetchUserMonthlyReportData(
     firestore: Firestore,
     userId: string,
@@ -281,42 +254,28 @@ export async function fetchUserMonthlyReportData(
     schoolConfig: any,
     monthlyConfig?: any
 ): Promise<MonthlyReportData[]> {
-=======
-export async function fetchUserMonthlyReportData(firestore: Firestore, userId: string, currentMonth: Date, schoolConfig: any, monthlyConfig: any) {
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(currentMonth);
     const today = new Date();
 
-<<<<<<< HEAD
     let effectiveMonthlyConfig = monthlyConfig;
     if (!effectiveMonthlyConfig) {
         const monthlyConfigSnap = await getDoc(doc(firestore, 'monthlyConfigs', format(monthStart, 'yyyy-MM')));
         effectiveMonthlyConfig = monthlyConfigSnap.data() || {};
     }
 
-=======
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     const attendanceHistoryQuery = query(collection(firestore, 'users', userId, 'attendanceRecords'), where('date', '>=', format(monthStart, 'yyyy-MM-dd')), where('date', '<=', format(monthEnd, 'yyyy-MM-dd')));
     const leaveHistoryQuery = query(collection(firestore, 'users', userId, 'leaveRequests'), where('status', '==', 'approved'));
     const lateHistoryQuery = query(collection(firestore, 'users', userId, 'lateSubmissions'), where('date', '>=', format(monthStart, 'yyyy-MM-dd')), where('date', '<=', format(monthEnd, 'yyyy-MM-dd')));
 
-<<<<<<< HEAD
     const [attendanceHistorySnap, leaveHistorySnap]: [QuerySnapshot<DocumentData>, QuerySnapshot<DocumentData>] = await Promise.all([ getDocs(attendanceHistoryQuery), getDocs(leaveHistoryQuery) ]);
-=======
-    const [attendanceHistorySnap, leaveHistorySnap] = await Promise.all([ getDocs(attendanceHistoryQuery), getDocs(leaveHistoryQuery) ]);
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     const lateHistorySnap = await getDocs(lateHistoryQuery);
 
     const attendanceHistory = attendanceHistorySnap.docs.map(d => ({ ...d.data(), id: d.id })) as AttendanceData[];
     const leaveHistory = leaveHistorySnap.docs.map(d => d.data());
 
     const offDays = Array.isArray(schoolConfig?.offDays) ? schoolConfig.offDays : [0];
-<<<<<<< HEAD
     const holidays = Array.isArray(effectiveMonthlyConfig?.holidays) ? effectiveMonthlyConfig.holidays : [];
-=======
-    const holidays = Array.isArray(monthlyConfig?.holidays) ? monthlyConfig.holidays : [];
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
     const attendanceMap = new Map<string, AttendanceData>(attendanceHistory.map(rec => [rec.date, rec]));
     const leaveMap = new Map<string, any>();
@@ -328,11 +287,7 @@ export async function fetchUserMonthlyReportData(firestore: Firestore, userId: s
     });
 
     const allDaysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
-<<<<<<< HEAD
     const report: any[] = [];
-=======
-    const report = [];
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     const lateMap = new Map<string, any>();
     lateHistorySnap.docs.forEach(d => {
         const data = d.data();
@@ -341,13 +296,9 @@ export async function fetchUserMonthlyReportData(firestore: Firestore, userId: s
 
     for (const day of allDaysInMonth) {
         const dayStr = format(day, 'yyyy-MM-dd');
-<<<<<<< HEAD
         if (isAfter(day, today) || offDays.includes(day.getDay()) || holidays.some((h: string) => h === dayStr)) {
             continue;
         }
-=======
-        if (offDays.includes(day.getDay()) || holidays.some((h: string) => h === dayStr) || isAfter(day, today)) continue; // FIX: Explicitly type 'h' as string
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
         let recordForDay;
         const attendanceRecord = attendanceMap.get(dayStr);
@@ -364,11 +315,7 @@ export async function fetchUserMonthlyReportData(firestore: Firestore, userId: s
                     description = `Menunggu Persetujuan: ${late.reason || ''}`.trim();
                 }
             }
-<<<<<<< HEAD
             recordForDay = { id: attendanceRecord.id, date: parseISO(attendanceRecord.date), checkInTime: attendanceRecord.checkInTime, checkOutTime: attendanceRecord.checkOutTime, status, description };
-=======
-            recordForDay = { id: attendanceRecord.id, date: parseISO(attendanceRecord.date), checkInTime: attendanceRecord.checkInTime?.toDate() || null, checkOutTime: attendanceRecord.checkOutTime?.toDate() || null, status, description };
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
         } else {
             const leaveRecord = leaveMap.get(dayStr);
             if (leaveRecord && (leaveRecord.type || '').toLowerCase() !== 'pulang cepat') {
@@ -389,7 +336,6 @@ export async function fetchUserMonthlyReportData(firestore: Firestore, userId: s
 
     report.sort((a, b) => b.date.getTime() - a.date.getTime());
 
-<<<<<<< HEAD
     return report.map(item => {
         const checkIn = item.checkInTime;
         const checkOut = item.checkOutTime;
@@ -402,7 +348,4 @@ export async function fetchUserMonthlyReportData(firestore: Firestore, userId: s
             checkOutTime: checkOut && checkOut.toDate ? checkOut.toDate().toISOString() : null,
         };
     });
-=======
-    return report.map(item => ({ ...item, date: item.date.toISOString(), checkInTime: (item as any).checkInTime?.toISOString() || null, checkOutTime: (item as any).checkOutTime?.toISOString() || null }));
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 }
