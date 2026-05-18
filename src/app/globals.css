@@ -1,0 +1,114 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@layer base {
+  :root {
+    /* General Palette */
+    --background: 240 5% 96%; /* Light Gray */
+    --foreground: 240 10% 3.9%;
+    
+    /* Card Palette */
+    --card: 0 0% 100%; /* White */
+    --card-foreground: 240 10% 3.9%;
+    
+    /* Popover Palette */
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    
+    /* Primary (Blue from image) */
+    --primary: 205 85% 55%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary & Muted */
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+
+    /* Accent (Green from image) */
+    --accent: 145 63% 42%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Destructive (Red from image) */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Other Essentials */
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 205 85% 55%; /* Blue for focus */
+    
+    /* Radius */
+    --radius: 0.75rem;
+
+    /* Custom Dashboard Card Colors */
+    --card-blue-bg: 205 85% 55%;
+    --card-blue-fg: 0 0% 100%;
+    --card-green-bg: 145 63% 42%;
+    --card-green-fg: 0 0% 100%;
+    --card-orange-bg: 35 100% 55%;
+    --card-orange-fg: 0 0% 100%;
+    --card-red-bg: 0 72% 51%;
+    --card-red-fg: 0 0% 100%;
+  }
+
+  .dark {
+    /* General Palette */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    /* Card Palette */
+    --card: 222 47% 14%;
+    --card-foreground: 210 40% 98%;
+
+    /* Popover Palette */
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary (Blue) */
+    --primary: 205 75% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary & Muted */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    /* Accent (Green) */
+    --accent: 145 55% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Destructive (Red) */
+    --destructive: 0 63% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Other Essentials */
+    --border: 217 33% 22%;
+    --input: 217 33% 22%;
+    --ring: 205 75% 50%;
+    
+    /* Custom Dashboard Card Colors (Dark) */
+    --card-blue-bg: 205 75% 50%;
+    --card-blue-fg: 0 0% 100%;
+    --card-green-bg: 145 55% 40%;
+    --card-green-fg: 0 0% 100%;
+    --card-orange-bg: 35 80% 50%;
+    --card-orange-fg: 0 0% 100%;
+    --card-red-bg: 0 63% 40%;
+    --card-red-fg: 0 0% 100%;
+  }
+}
+
+@layer base {
+  * {
+    /* Set default border color using CSS variable to avoid using @apply here */
+    border-color: hsl(var(--border));
+  }
+  body {
+    /* Use CSS variables directly for background and text color */
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}

@@ -1,0 +1,8 @@
+{
+    "workbench.editor.autoLockGroups": {
+        "default": true,
+        "workbench.editors.gettingStartedInput": true
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true
+}
