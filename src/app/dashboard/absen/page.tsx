@@ -45,13 +45,27 @@ export default function AbsenPage() {
   const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
   const readerId = "qr-reader";
 
-  // --- Firestore Data Hooks ---
-  const userDocRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'users', user.uid) : null, [firestore, user]);
+  // --- Firestore Data Hooks (DEFINITIVE FIX) ---
+  const userDocRef = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+
   const { data: userData, isLoading: isUserDataLoading } = useDoc(user, userDocRef);
-  const schoolConfigRef = useMemoFirebase(() => firestore ? doc(firestore, 'schoolConfig', 'default') : null, [firestore]);
+
+  const schoolConfigRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'schoolConfig', 'default');
+  }, [firestore]);
+
   const { data: schoolConfig, isLoading: isConfigLoading } = useDoc(user, schoolConfigRef);
+
   const monthlyConfigId = useMemo(() => format(new Date(), 'yyyy-MM'), []);
-  const monthlyConfigRef = useMemoFirebase(() => firestore ? doc(firestore, 'monthlyConfigs', monthlyConfigId) : null, [firestore, monthlyConfigId]);
+  const monthlyConfigRef = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return doc(firestore, 'monthlyConfigs', monthlyConfigId);
+  }, [firestore, monthlyConfigId]);
+
   const { data: monthlyConfig, isLoading: isMonthlyConfigLoading } = useDoc(user, monthlyConfigRef);
   
   const todaysAttendanceQuery = useMemoFirebase(() => {
@@ -59,6 +73,7 @@ export default function AbsenPage() {
     const todayStr = format(new Date(), 'yyyy-MM-dd');
     return query(collection(firestore, 'users', user.uid, 'attendanceRecords'), where('date', '==', todayStr));
   }, [user, firestore]);
+
   const { data: todaysAttendance, isLoading: isAttendanceLoading } = useCollection(user, todaysAttendanceQuery);
   const todaysRecord = useMemo(() => todaysAttendance?.[0], [todaysAttendance]);
 
