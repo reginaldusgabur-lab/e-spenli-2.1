@@ -44,16 +44,22 @@ export default function UserReportDetailPage() {
     const [error, setError] = useState<string | null>(null);
 
     const schoolConfigRef = useMemoFirebase(() => firestore ? doc(firestore, 'schoolConfig', 'default') : null, [firestore]);
-    const { data: schoolConfigData, loading: isConfigLoading } = useDoc(currentUser, schoolConfigRef);
+    const { data: schoolConfigData, isLoading: isConfigLoading } = useDoc(currentUser, schoolConfigRef);
 
     useEffect(() => {
         if (!firestore || !userId || !schoolConfigData || !currentUser) return;
-        if (!['admin', 'kepala_sekolah'].includes(currentUser.role)) return;
+        
+        // Security check is handled in the render section. This effect will only run for authorized users.
 
         const fetchData = async () => {
             setIsLoading(true);
             setError(null);
             try {
+                // Authorization check: ensure user can only access their own report or if they are an admin/headmaster
+                if (currentUser.role !== 'admin' && currentUser.role !== 'kepala_sekolah' && currentUser.uid !== userId) {
+                     throw new Error('Anda tidak memiliki izin untuk melihat laporan ini.');
+                }
+
                 const userRef = doc(firestore, 'users', userId);
                 const userSnap = await getDoc(userRef);
                 if (!userSnap.exists()) {
@@ -118,7 +124,8 @@ export default function UserReportDetailPage() {
 
     const pageIsLoading = isLoading || isUserLoading || isConfigLoading;
 
-    if (!isUserLoading && currentUser && !['admin', 'kepala_sekolah'].includes(currentUser.role)) {
+    // Authorization check
+    if (!isUserLoading && currentUser && currentUser.role !== 'admin' && currentUser.role !== 'kepala_sekolah' && currentUser.uid !== userId) {
         return (
              <PageWrapper>
                 <Alert variant="destructive">

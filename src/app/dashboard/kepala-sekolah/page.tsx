@@ -31,6 +31,20 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
+// Define types for Firestore data to ensure type safety
+interface EnrichedAttendanceRecord extends DocumentData {
+  id: string;
+  userId: string;
+  checkInTime?: Timestamp;
+  checkOutTime?: Timestamp;
+}
+
+interface EnrichedLeaveRequest extends DocumentData {
+    id: string;
+    userId: string;
+    status: string;
+}
+
 // LiveClock component, kept internally to avoid touching other files
 function LiveClock() {
   const [currentTime, setCurrentTime] = useState<Date | null>(null);
@@ -151,9 +165,12 @@ export default function KepalaSekolahDashboardPage() {
   const allUsersQuery = useMemoFirebase(() => (isHeadmaster && firestore) ? collection(firestore, 'users') : null, [firestore, isHeadmaster]);
   const { data: usersData, isLoading: isUsersLoading } = useCollection(user, allUsersQuery);
   
-  const [dashboardData, setDashboardData] = useState({
-    allAttendanceData: [] as DocumentData[],
-    pendingLeaveRequests: [] as DocumentData[],
+  const [dashboardData, setDashboardData] = useState<{
+    allAttendanceData: EnrichedAttendanceRecord[];
+    pendingLeaveRequests: EnrichedLeaveRequest[];
+  }>({ 
+    allAttendanceData: [],
+    pendingLeaveRequests: [],
   });
   const [isDashboardDataLoading, setIsDashboardDataLoading] = useState(true);
 
@@ -188,7 +205,7 @@ export default function KepalaSekolahDashboardPage() {
             const userMap = new Map(usersData.map(u => [u.id, u.role]));
             
             const allAttendance = attendanceSnap.docs
-                .map(d => ({ ...d.data(), id: d.id }))
+                .map(d => ({ ...d.data(), id: d.id } as EnrichedAttendanceRecord))
                 .filter(att => {
                     const checkIn = att.checkInTime?.toDate();
                     const role = userMap.get(att.userId);
@@ -196,7 +213,7 @@ export default function KepalaSekolahDashboardPage() {
                 });
             
             const allPendingLeave = leaveSnap.docs
-                .map(d => ({ ...d.data(), id: d.id }))
+                .map(d => ({ ...d.data(), id: d.id } as EnrichedLeaveRequest))
                 .filter(req => {
                     const role = userMap.get(req.userId);
                     return req.status === 'pending' && role && ['guru', 'kepala_sekolah', 'pegawai'].includes(role);
@@ -219,7 +236,7 @@ export default function KepalaSekolahDashboardPage() {
     };
 
     fetchDashboardData();
-  }, [isHeadmaster, firestore, isUsersLoading, toast]);
+  }, [isHeadmaster, firestore, usersData, isUsersLoading, toast]); // Added usersData to dependency array
 
   const isLoading = isRoleLoading || isConfigLoading || isAttendanceLoading || isUsersLoading || isDashboardDataLoading;
   
