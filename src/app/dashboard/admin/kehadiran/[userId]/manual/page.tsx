@@ -94,11 +94,7 @@ export default function ManualAttendancePage() {
     }, [authUser, isAuthLoading, firestore, userId, recordId, router]);
 
     const handleReset = async () => {
-<<<<<<< HEAD
-        if (!existingRecord) return;
-=======
         if (!existingRecord || !firestore) return;
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
         setIsSubmitting(true);
         try {
@@ -108,10 +104,6 @@ export default function ManualAttendancePage() {
                 title: "Sukses",
                 description: "Data kehadiran telah di-reset menjadi Alpa.",
             });
-<<<<<<< HEAD
-            // Refresh state to show that the record is gone
-=======
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
             setExistingRecord(null);
             setCheckIn('');
             setCheckOut('');
@@ -133,13 +125,10 @@ export default function ManualAttendancePage() {
             setError('Jam masuk wajib diisi.');
             return;
         }
-<<<<<<< HEAD
-=======
         if (!firestore || !authUser) {
             setError('Koneksi database atau otentikasi gagal. Silakan coba lagi.');
             return;
         }
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 
         setIsSubmitting(true);
         setError(null);
@@ -176,22 +165,12 @@ export default function ManualAttendancePage() {
             };
 
             if (docSnap.exists()) {
-<<<<<<< HEAD
-                await updateDoc(recordRef, { ...dataToSave, lastModifiedBy: authUser?.uid, lastModifiedAt: serverTimestamp() });
-            } else {
-                await setDoc(recordRef, { ...dataToSave, createdBy: authUser?.uid, createdAt: serverTimestamp() });
-            }
-            
-            toast({ title: "Sukses", description: "Data kehadiran telah berhasil disimpan." });
-            // Re-fetch data to update UI, especially to show the reset button
-=======
                 await updateDoc(recordRef, { ...dataToSave, lastModifiedBy: authUser.uid, lastModifiedAt: serverTimestamp() });
             } else {
                 await setDoc(recordRef, { ...dataToSave, createdBy: authUser.uid, createdAt: serverTimestamp() });
             }
             
             toast({ title: "Sukses", description: "Data kehadiran telah berhasil disimpan." });
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
             fetchData();
 
         } catch (err) {

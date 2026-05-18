@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
 'use client';
 
 import { useMemo, useEffect, useState } from 'react';
@@ -75,11 +71,7 @@ export default function PersetujuanIzinPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   const userDocRef = useMemoFirebase(() => {
-<<<<<<< HEAD
-    if (!user) return null;
-=======
     if (!user || !firestore) return null; // FIX: Added firestore check
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
     return doc(firestore, 'users', user.uid);
   }, [firestore, user]);
   const { data: userData, isLoading: isUserDataLoading } = useDoc(user, userDocRef);
@@ -87,14 +79,10 @@ export default function PersetujuanIzinPage() {
   const isRoleCheckLoading = isAuthLoading || isUserDataLoading;
   const isPrivileged = !isRoleCheckLoading && (userData?.role === 'kepala_sekolah' || userData?.role === 'admin');
 
-<<<<<<< HEAD
-  const allUsersQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'users'), where('role', '!=', 'siswa')) : null, [firestore]);
-=======
   const allUsersQuery = useMemoFirebase(() => {
     if (!firestore) return null; // FIX: Added firestore check
     return query(collection(firestore, 'users'), where('role', '!=', 'siswa'));
   }, [firestore]);
->>>>>>> 2842d5e23fa8e4a7e1dcf4b60fdde59c65b3426a
   const { data: usersData, isLoading: isUsersLoading } = useCollection(user, allUsersQuery);
   const userMap = useMemo(() => {
     if (!usersData) return new Map();
